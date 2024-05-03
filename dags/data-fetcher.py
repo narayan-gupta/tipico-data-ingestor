@@ -32,19 +32,22 @@ def tipico_data_decorator():
 
         # Define GCS bucket and file path
         bucket_name = "data-fetch-output"
-        file_name = "tipico_data.json"
 
-        # Write data to local file
-        with open(file_name, 'w') as file:
-            file.write(json.dumps(data))
+        output_file_path = 'tipico_data_formatted.json'
+
+    # Format Data so we can load into big query
+        with open(output_file_path, 'w') as ndjson_file:
+            for entry in data:
+            # Write each entry as a newline-delimited JSON object
+                ndjson_file.write(json.dumps(entry) + '\n')
 
         # Upload file to GCS
         bucket = client.get_bucket(bucket_name)
-        blob = bucket.blob(file_name)
-        blob.upload_from_filename(file_name)
+        blob = bucket.blob(output_file_path)
+        blob.upload_from_filename(output_file_path)
 
         # Delete local file
-        os.remove(file_name)
+        os.remove(output_file_path)
         return data
 
     run_this = fetch_data()
