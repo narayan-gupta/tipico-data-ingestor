@@ -1,10 +1,11 @@
 {{ config(materialized='table') }}
 
 SELECT
-    DISTINCT participant.id AS participant_id,
+    main.id AS event_id,
+    participant.id AS participant_id,
     participant.name,
     participant.position,
     participant.abbreviation
 FROM
-    {{ source('tipico', 'sports-data') }},
-    UNNEST(participants) AS participant
+    {{ source('tipico', 'sports-data') }} main,
+    UNNEST(main.participants) AS participant
